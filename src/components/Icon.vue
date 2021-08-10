@@ -1,5 +1,8 @@
 <template>
-  <span class="mw-icon notranslate" :class="classes">
+  <span
+    class="mw-icon notranslate"
+    :class="classes"
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       :width="size"
@@ -8,17 +11,17 @@
       :aria-labelledby="iconName"
       aria-hidden="true"
       role="presentation"
-      @click="handleClick"
     >
-      <title v-if="iconName" :id="iconName">{{ iconName }}</title>
+      <title v-if="iconName">{{ iconName }}</title>
       <g :fill="iconColor">
-        <path :d="iconImagePath" />
+        <path :d="icon?.path || icon" />
       </g>
     </svg>
   </span>
 </template>
 
 <script>
+import { computed } from "vue";
 export default {
   name: "MWIcon",
   props: {
@@ -27,47 +30,45 @@ export default {
      **/
     icon: {
       type: [String, Object],
-      default: null
+      default: null,
     },
     iconName: {
       type: String,
-      default: null
+      default: null,
     },
     /**
      * Icon color
      **/
     iconColor: {
       type: String,
-      default: "currentColor"
+      default: "currentColor",
     },
     /**
      * Icon size
      **/
     size: {
       type: [Number, String],
-      default: 20
-    }
+      default: 20,
+    },
   },
-  computed: {
-    classes: vm => ({
-      "mw-icon--noflip": !vm.flip
-    }),
-    iconImagePath: vm => vm.icon?.path || vm.icon,
+  setup(props) {
     /**
      * Whether the icon should be flipped on RTL(Default: true)
      */
-    flip: vm => vm.icon?.flippable !== false
-  },
-  methods: {
-    handleClick(e) {
-      this.$emit("click", e);
-    }
+    const flip = computed(() => props.icon?.flippable === true);
+    const classes = computed(() => ({ "mw-icon--noflip": !flip.value }));
+    return {
+      classes,
+      flip,
+    };
   }
 };
 </script>
 
 <style>
 span.mw-icon {
+  align-items: center;
+  display: inline-flex;
   text-indent: 0;
   vertical-align: middle;
   user-select: none;
